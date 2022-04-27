@@ -11,6 +11,6 @@ function list(req, res){
     res.json( {data:orders} )
 }
 
-module.exports {
+module.exports = {
     list,
 }
