@@ -17,7 +17,7 @@ const nextId = require("../utils/nextId");
 //     }
 // }
 
-function requestBodyHasName(req, next){
+function requestBodyHasName(req, res, next){
     const { data: {name} = {} } = req.body;
     if (name) {
         return next();
@@ -25,7 +25,7 @@ function requestBodyHasName(req, next){
     next({status:400, message: `must include a name`})
 }
 
-function requestBodyHasDescription(req, next){
+function requestBodyHasDescription(req, res, next){
     const { data: {description} = {} } = req.body;
     if (description) {
         return next();
@@ -33,7 +33,7 @@ function requestBodyHasDescription(req, next){
     next({status:400, message: `must include a description`})
 }
 
-function requestBodyHasPrice(req, next){
+function requestBodyHasPrice(req, res, next){
     const { data: {price} = {} } = req.body;
     if (price) {
         return next();
@@ -41,7 +41,7 @@ function requestBodyHasPrice(req, next){
     next({status:400, message: `must include a price`})
 }
 
-function requestBodyHasImageUrl(req, next){
+function requestBodyHasImageUrl(req, res, next){
     const { data: {image_url} = {} } = req.body;
     if (image_url) {
         return next();

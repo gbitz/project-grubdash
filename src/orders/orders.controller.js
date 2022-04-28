@@ -17,31 +17,31 @@ const nextId = require("../utils/nextId");
 //     };
 // }
 
-function requestBodyHasDeliverTo(req, next) {
+function requestBodyHasDeliverTo(req, res, next) {
     const { data: {deliverTo} = {} } = req.body;
     if (deliverTo) {
         return next();
     }
-    next({status:400, message: `must include a DeliverTo`})    
+    next({status:400, message: `must include a deliverTo`})    
 } 
 
-function requestBodyHasMobileNumber(req, next){
+function requestBodyHasMobileNumber(req, res, next){
     const { data: {mobileNumber} = {} } = req.body;
     if (mobileNumber) {
         return next();
     }
-    next({status:400, message: `must include a MobileNumber`})
+    next({status:400, message: `must include a mobileNumber`})
 }
 
-function requestBodyHasDishes(req, next){
+function requestBodyHasDishes(req, res, next){
     const { data: {dishes} = {} } = req.body;
     if (dishes) {
         return next();
     }
-    next({status:400, message: `must include dishes`})
+    next({status:400, message: `must include a dish`})
 }
 
-function requestBodyHasStatus(req, next){
+function requestBodyHasStatus(req, res, next){
     const { data: {status} = {} } = req.body;
     if (status) {
         return next();
@@ -163,7 +163,6 @@ module.exports = {
         requestBodyHasDeliverTo,
         requestBodyHasMobileNumber,
         requestBodyHasDishes,
-        requestBodyHasStatus,
         validateDishes,
         create
     ],
