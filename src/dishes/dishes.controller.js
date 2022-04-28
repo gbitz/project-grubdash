@@ -7,14 +7,46 @@ const dishes = require(path.resolve("src/data/dishes-data"));
 const nextId = require("../utils/nextId");
 
 // Validation
-function bodyDataHas(propertyName) {
-    return function (req,res,next) {
-        const {data = {} } = req.body;
-        if (data[propertyName]) {
-            return next();
-        }
-        next({status : 400, message: `Must include a ${propertyName}` });
+// function bodyDataHas(propertyName) {
+//     return function (req,res,next) {
+//         const {data = {} } = req.body;
+//         if (data[propertyName]) {
+//             return next();
+//         }
+//         next({status : 400, message: `Must include a ${propertyName}` });
+//     }
+// }
+
+function requestBodyHasName(req, next){
+    const { data: {name} = {} } = req.body;
+    if (name) {
+        return next();
     }
+    next({status:400, message: `must include a name`})
+}
+
+function requestBodyHasDescription(req, next){
+    const { data: {description} = {} } = req.body;
+    if (description) {
+        return next();
+    }
+    next({status:400, message: `must include a description`})
+}
+
+function requestBodyHasPrice(req, next){
+    const { data: {price} = {} } = req.body;
+    if (price) {
+        return next();
+    }
+    next({status:400, message: `must include a price`})
+}
+
+function requestBodyHasImageUrl(req, next){
+    const { data: {image_url} = {} } = req.body;
+    if (image_url) {
+        return next();
+    }
+    next({status:400, message: `must include a image_url`})
 }
 
 function validPrice(req, res, next) {
@@ -72,7 +104,6 @@ function read(req, res) {
 }
 
 function update(req, res) {
-    // const {dishId} = req.params;
     const foundDish = res.locals.dish;
     
     const {data: {name,
@@ -91,10 +122,14 @@ function update(req, res) {
 module.exports = {
     list,
     create : [
-        bodyDataHas("name"),
-        bodyDataHas("description"),
-        bodyDataHas("price"),
-        bodyDataHas("image_url"),
+        // bodyDataHas("name"),
+        // bodyDataHas("description"),
+        // bodyDataHas("price"),
+        // bodyDataHas("image_url"),
+        requestBodyHasName,
+        requestBodyHasDescription,
+        requestBodyHasPrice,
+        requestBodyHasImageUrl,
         validPrice,
         create
     ],
@@ -104,10 +139,14 @@ module.exports = {
     ],
     update : [
         dishExists,
-        bodyDataHas("name"),
-        bodyDataHas("description"),
-        bodyDataHas("price"),
-        bodyDataHas("image_url"),
+        // bodyDataHas("name"),
+        // bodyDataHas("description"),
+        // bodyDataHas("price"),
+        // bodyDataHas("image_url"),
+        requestBodyHasName,
+        requestBodyHasDescription,
+        requestBodyHasPrice,
+        requestBodyHasImageUrl,
         dataIdMatchesParamId,
         validPrice,
         update

@@ -7,16 +7,47 @@ const orders = require(path.resolve("src/data/orders-data"));
 const nextId = require("../utils/nextId");
 
 //Validation
-function bodyDataHas(propertyName) {
-    return function (req, res, next) {
-      const { data = {} } = req.body;
-      if (data[propertyName]) {
+// function bodyDataHas(propertyName) {
+//     return function (req, res, next) {
+//       const { data = {} } = req.body;
+//       if (data[propertyName]) {
+//         return next();
+//       }
+//       next({ status: 400, message: `Must include a ${propertyName}` });
+//     };
+// }
+
+function requestBodyHasDeliverTo(req, next) {
+    const { data: {deliverTo} = {} } = req.body;
+    if (deliverTo) {
         return next();
-      }
-      next({ status: 400, message: `Must include a ${propertyName}` });
-    };
+    }
+    next({status:400, message: `must include a DeliverTo`})    
+} 
+
+function requestBodyHasMobileNumber(req, next){
+    const { data: {mobileNumber} = {} } = req.body;
+    if (mobileNumber) {
+        return next();
+    }
+    next({status:400, message: `must include a MobileNumber`})
 }
 
+function requestBodyHasDishes(req, next){
+    const { data: {dishes} = {} } = req.body;
+    if (dishes) {
+        return next();
+    }
+    next({status:400, message: `must include dishes`})
+}
+
+function requestBodyHasStatus(req, next){
+    const { data: {status} = {} } = req.body;
+    if (status) {
+        return next();
+    }
+    next({status:400, message: `must include a status`})
+}
 
 function validateDishes(req, res, next) {
   const {data: {dishes} = {} } = req.body;
@@ -126,9 +157,13 @@ function destroy(req, res) {
 module.exports = {
     list,
     create: [
-        bodyDataHas("deliverTo"),
-        bodyDataHas("mobileNumber"),
-        bodyDataHas("dishes"),
+        // bodyDataHas("deliverTo"),
+        // bodyDataHas("mobileNumber"),
+        // bodyDataHas("dishes"),
+        requestBodyHasDeliverTo,
+        requestBodyHasMobileNumber,
+        requestBodyHasDishes,
+        requestBodyHasStatus,
         validateDishes,
         create
     ],
@@ -138,10 +173,14 @@ module.exports = {
     ],
     update: [
         orderExists,
-        bodyDataHas("deliverTo"),
-        bodyDataHas("mobileNumber"),
-        bodyDataHas("dishes"),
-        bodyDataHas("status"),
+        // bodyDataHas("deliverTo"),
+        // bodyDataHas("mobileNumber"),
+        // bodyDataHas("dishes"),
+        // bodyDataHas("status"),
+        requestBodyHasDeliverTo,
+        requestBodyHasMobileNumber,
+        requestBodyHasDishes,
+        requestBodyHasStatus,
         dataIdMatchesParamId,
         validateStatus,
         validateDishes,
