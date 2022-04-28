@@ -32,6 +32,19 @@ function validateDishes(req, res, next) {
   next({status: 400, message: `dish list is not valid required`})
 }
 
+function orderExists(req, res, next) {
+    const {orderId} = req.params;
+    const foundOrder = orders.find((order) => order.id === orderId);
+
+    if (foundOrder) {
+        res.locals.orders = foundOrder;
+        return next();
+    }
+    next({
+        status: 404,
+        message: `order id not found ${orderId}`
+    })
+}
 // TODO: Implement the /orders handlers needed to make the tests pass
 function list(req, res){
     res.json( {data:orders} )
@@ -54,14 +67,22 @@ function create(req, res) {
 
 }
 
+function read(req, res) {
+    const foundOrder = res.locals.orders;
+    res.json({data: foundOrder});
+}
+
 module.exports = {
     list,
     create: [
         bodyDataHas("deliverTo"),
         bodyDataHas("mobileNumber"),
-//         bodyDataHas("status"),
         bodyDataHas("dishes"),
         validateDishes,
         create
+    ],
+    read: [
+        orderExists,
+        read
     ]
 }
