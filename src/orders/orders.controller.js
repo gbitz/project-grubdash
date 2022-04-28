@@ -37,13 +37,38 @@ function orderExists(req, res, next) {
     const foundOrder = orders.find((order) => order.id === orderId);
 
     if (foundOrder) {
-        res.locals.orders = foundOrder;
+        res.locals.order = foundOrder;
         return next();
     }
     next({
         status: 404,
         message: `order id not found ${orderId}`
     })
+}
+
+function dataIdMatchesParamId(req, res, next) {
+    const {data: {id} } =req.body;
+    const {orderId} = req.params;
+    if (orderId === id || !id) {
+      return next()
+    } else {
+      next({status: 400, message: `param id "${orderId}" does not match order ${id} `})
+    }
+}
+
+function validateStatus(req, res, next) {
+    const foundOrder = res.locals.order
+    const {data: {status} = {} } = req.body;
+    if (status === foundOrder.status) {
+        return next();
+    } else {
+        if (foundOrder.status === "delivered" && foundOrder.status !== status) {
+            return next({status:400, message: "A delivered order cannot be changed"})
+        } else if (status === "delivered" ||status === "pending" ||status === "preparing" ||status === "out-for-delivery" ) {
+            return next()
+        }
+        return next({status: 400, message:`Order must have a status of pending, preparing, out-for-delivery, delivered`}) 
+    }
 }
 // TODO: Implement the /orders handlers needed to make the tests pass
 function list(req, res){
@@ -64,12 +89,23 @@ function create(req, res) {
 
     orders.push(newOrder);
     res.status(201).json({data: newOrder}); 
-
 }
 
 function read(req, res) {
-    const foundOrder = res.locals.orders;
+    const foundOrder = res.locals.order;
     res.json({data: foundOrder});
+}
+
+function update(req, res) {
+    foundOrder = res.locals.order;
+
+    const {data:  {deliverTo, mobileNumber, status, dishes} = {} } = req.body;
+    foundOrder.deliverTo = deliverTo;
+    foundOrder.mobileNumber = mobileNumber;
+    foundOrder.status = status;
+    foundOrder.dishes = dishes;
+
+    res.json({ data:foundOrder })
 }
 
 module.exports = {
@@ -84,5 +120,16 @@ module.exports = {
     read: [
         orderExists,
         read
+    ],
+    update: [
+        orderExists,
+        bodyDataHas("deliverTo"),
+        bodyDataHas("mobileNumber"),
+        bodyDataHas("dishes"),
+        bodyDataHas("status"),
+        dataIdMatchesParamId,
+        validateStatus,
+        validateDishes,
+        update  
     ]
 }

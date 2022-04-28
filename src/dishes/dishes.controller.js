@@ -72,7 +72,7 @@ function read(req, res) {
 }
 
 function update(req, res) {
-    const {dishId} = req.params;
+    // const {dishId} = req.params;
     const foundDish = res.locals.dish;
     
     const {data: {name,
