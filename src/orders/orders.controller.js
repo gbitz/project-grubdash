@@ -70,6 +70,14 @@ function validateStatus(req, res, next) {
         return next({status: 400, message:`Order must have a status of pending, preparing, out-for-delivery, delivered`}) 
     }
 }
+
+function pendingCheck(req, res, next) {
+    const foundOrder = res.locals.order;
+    if (foundOrder.status !=="pending") {
+        return next({status:400, message: "An order cannot be deleted unless it is pending"})
+    }
+    return next();
+}
 // TODO: Implement the /orders handlers needed to make the tests pass
 function list(req, res){
     res.json( {data:orders} )
@@ -108,6 +116,13 @@ function update(req, res) {
     res.json({ data:foundOrder })
 }
 
+function destroy(req, res) {
+    const {orderId} = req.params
+    const index = orders.findIndex((order) => order.id === orderId);
+    orders.splice(index, 1);
+    res.sendStatus(204);
+}
+
 module.exports = {
     list,
     create: [
@@ -131,5 +146,10 @@ module.exports = {
         validateStatus,
         validateDishes,
         update  
+    ],
+    delete: [
+        orderExists,
+        pendingCheck,
+        destroy
     ]
 }
